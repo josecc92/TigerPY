@@ -11,6 +11,7 @@ import pandas as pd
 
 import time
 TIMEOUT =30
+DIFF_DATE = 5
 # 初始化 WebDriver（這裡使用 ChromeDriver）
 
 def wait_for_page_load(driver, timeout=10):
@@ -66,7 +67,7 @@ class tiger:
             self.children = children            
         
         departure_date = datetime.strptime(base_date_str, "%Y/%m/%d")
-        return_date = departure_date + timedelta(days=5)
+        return_date = departure_date + timedelta(days=DIFF_DATE)
         # 將結果轉換回字串格式
         departure_date_str = departure_date.strftime("%Y-%m-%d")
         return_date_str = return_date.strftime("%Y-%m-%d")
@@ -131,20 +132,17 @@ class tiger:
         data = None
 
 if __name__ == "__main__":
+    adults = 2
+    children = 2
+    routes = [("2024/08/11","XX3", "XX4"),("2024/08/11","XX3", "XX7"), ("2024/08/11","XX3", "XX8"), ("2024/08/11","XX3", "XX9"), ("2024/08/11","XX3", "XX2"), ("2024/08/11","XX3", "XX6"), ("2024/08/11","XX3", "XX5")]
     tiger1 = tiger( 'TPE', 'XX7')
     driver = tiger1.create_driver()
-    dic = tiger1.get_date_and_cost('2024/08/11',driver,"TPE", "XX8", 2, 2)
-    tiger1.calculate_best_price(dic)
-    dic = tiger1.get_date_and_cost('2024/08/11',driver,"TPE", "XX7", 2, 2)
-    tiger1.calculate_best_price(dic)    
-    dic = tiger1.get_date_and_cost('2024/08/11',driver,"TPE", "XX9", 2, 2)
-    tiger1.calculate_best_price(dic)
-    dic = tiger1.get_date_and_cost('2024/08/11',driver,"TPE", "XX2", 2, 2)
-    tiger1.calculate_best_price(dic)
-    dic = tiger1.get_date_and_cost('2024/08/11',driver,"TPE", "XX6", 2, 2)
-    tiger1.calculate_best_price(dic)
-    dic = tiger1.get_date_and_cost('2024/08/11',driver,"TPE", "XX5", 2, 2)
-    tiger1.calculate_best_price(dic)    
+    print(f"================搜尋票價 成人:{adults}, 兒童:{children}================")
+    for base_date, departure, arrival in routes:
+        print(f"出發: {base_date} ± 2, 回程: {(datetime.strptime(base_date, "%Y/%m/%d") + timedelta(days=DIFF_DATE) ).strftime("%Y-%m-%d")} ± 2")
+        dic = tiger1.get_date_and_cost(base_date,driver,departure, arrival, adults, children)
+        tiger1.calculate_best_price(dic)
+        print()
     driver.quit()
     #XX3 台灣
     #XX7 關東
